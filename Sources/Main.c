@@ -29,7 +29,7 @@ EFI_Status kOS_EFI_main(EFI_Handle handle, EFI_System_Table* table)
     EFI_Protocol_Text_Input_Key key;
     uint16_t key_message[2] = { '\00', '\00' };
     uint16_t i = 0;
-    uint16_t program[65535] = { '\00' };
+    uint16_t program[1024] = { '\00' };
     
     // Input program
 
