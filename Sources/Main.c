@@ -21,14 +21,18 @@
 
 EFI_Status kOS_EFI_main(EFI_Handle handle, EFI_System_Table* table)
 {
-    // TODO: this is just crappy test code, implement a full bootloader
-
-    table->console_out->string_output(table->console_out, L"kOS EFI Bootloader - v0.0.1");
+    table->console_out->string_output(table->console_out, L"kOS EFI Bootloader - v0.0.1 - 'SMALL' Version (contains small esolang intepreter)\nYour firmware vendor is: ");
     table->console_out->string_output(table->console_out, table->firmware_vendor);
+    table->console_out->string_output(table->console_out, L"\nEnter your code:\n");
 
     uint64_t out = 0;
     EFI_Protocol_Text_Input_Key key;
     uint16_t key_message[2] = { '\00', '\00' };
+    uint16_t i = 0;
+    uint16_t program[65535] = { '\00' };
+    
+    // Input program
+
     while (true)
     {
         table->services_boot->wait_for_event(0, &table->console_in->wait_for_key, &out);
@@ -37,7 +41,26 @@ EFI_Status kOS_EFI_main(EFI_Handle handle, EFI_System_Table* table)
 
         key_message[0] = key.unicode_character;
         table->console_out->string_output(table->console_out, key_message);
+        if (key_message[0] == L'\n') {
+            break;
+        }
+        else {
+            program[i] = key_message[0];
+            i++;
+        }
     }
+
+    uint16_t a = 0;
+
+    // Run program
+    for (uint16_t pc = 0; program[pc] != '\00'; pc++) {
+        if (a == 255) a = 0;
+        else if (program[pc] == '+') a++;
+        else if (program[pc] == '.') {
+            key_message[0] = program[pc];
+            table->console_out->string_output(table->console_out, key_message);
+        }
+    } 
 
     return EFI_Status_Success;
 }
